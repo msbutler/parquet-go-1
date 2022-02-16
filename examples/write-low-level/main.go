@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math"
 	"os"
 
 	goparquet "github.com/fraugster/parquet-go"
@@ -21,6 +22,7 @@ func main() {
 			required int64 id;
 			required binary city (STRING);
 			optional int64 population;
+			optional float income;
 		}`)
 	if err != nil {
 		log.Fatalf("Parsing schema definition failed: %v", err)
@@ -36,12 +38,9 @@ func main() {
 		ID   int
 		City string
 		Pop  int
+		Inc float64
 	}{
-		{ID: 1, City: "Berlin", Pop: 3520031},
-		{ID: 2, City: "Hamburg", Pop: 1787408},
-		{ID: 3, City: "Munich", Pop: 1450381},
-		{ID: 4, City: "Cologne", Pop: 1060582},
-		{ID: 5, City: "Frankfurt", Pop: 732688},
+		{ID: 1, City: "Berlin", Pop: 3520031, Inc: math.NaN()},
 	}
 
 	for _, input := range inputData {
@@ -49,6 +48,7 @@ func main() {
 			"id":         int64(input.ID),
 			"city":       []byte(input.City),
 			"population": int64(input.Pop),
+			"income":     float32(input.Inc),
 		}); err != nil {
 			log.Fatalf("Failed to add input %v to parquet file: %v", input, err)
 		}
